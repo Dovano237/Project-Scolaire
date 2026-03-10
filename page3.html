@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>✨ CSAO · Quiz orientation (robot actif)</title>
+    <!-- Google Fonts & Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="images/IMG-20260310-WA0012.jpg" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ===== STYLES (identiques) ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #003366;
+            --primary-light: #1a4d7a;
+            --gold: #d4af37;
+            --gold-light: #f5d742;
+            --success: #28a745;
+            --danger: #dc3545;
+            --accent: #ff5722;
+            --bg-light: #f5f7fa;
+            --bg-dark: #1a2634;
+            --text-light: #1e293b;
+            --text-dark: #e2e8f0;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(212, 175, 55, 0.2);
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.1);
+            --safe-area: env(safe-area-inset-bottom, 0);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, var(--bg-light) 0%, #e9edf2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-light);
+            transition: background 0.3s, color 0.3s;
+            line-height: 1.5;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(145deg, #1a2634 0%, #0f1a24 100%);
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .glass-card {
+            background: rgba(30, 40, 55, 0.95);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .welcome-robot {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 10000;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            max-width: 420px;
+            animation: slideUp 0.5s ease-out;
+            pointer-events: none;
+        }
+
+        @media (max-width: 640px) {
+            .welcome-robot {
+                bottom: 20px;
+                left: 20px;
+                max-width: 300px;
+            }
+        }
+
+        .robot-avatar {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(145deg, #003366, #1a4d7a);
+            border-radius: 40% 60% 40% 60% / 60% 40% 60% 40%;
+            border: 3px solid var(--gold);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--gold);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .robot-speech {
+            background: white;
+            padding: 16px 22px;
+            border-radius: 24px 24px 24px 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-md);
+            border-left: 5px solid var(--gold);
+            color: #1e293b;
+            position: relative;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.98);
+            line-height: 1.5;
+            pointer-events: auto;
+        }
+
+        .dark-mode .robot-speech {
+            background: #2a3442;
+            color: #e2e8f0;
+            border-left-color: var(--gold-light);
+        }
+
+        .robot-speech::before {
+            content: '';
+            position: absolute;
+            bottom: 12px;
+            left: -14px;
+            width: 18px;
+            height: 18px;
+            background: inherit;
+            border-bottom: 3px solid var(--gold);
+            border-left: 3px solid var(--gold);
+            border-radius: 0 0 0 20px;
+            transform: skewX(-8deg);
+        }
+
+        .robot-close {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--gold);
+            color: var(--primary);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: var(--shadow-sm);
+            pointer-events: auto;
+            transition: all 0.2s;
+        }
+        .robot-close:hover { transform: scale(1.1); background: white; color: var(--primary); }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 8px 12px;
+            border-radius: 60px;
+            border: 1px solid rgba(212,175,55,0.3);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .control-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            border: 1.5px solid var(--gold);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+        }
+        .control-btn:hover { background: var(--gold); color: var(--primary); transform: scale(1.05); }
+        @media (max-width: 480px) { .control-btn { width: 38px; height: 38px; } }
+
+        .hero {
+            min-height: 35vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #003366 0%, #1a4d7a 100%);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .hero-content h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 7vw, 4rem);
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .hero-content p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: rgba(255,255,255,0.9);
+        }
+
+        .glass-card {
+            max-width: 900px;
+            width: 90%;
+            margin: -30px auto 30px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border-radius: 40px;
+            padding: 35px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--glass-border);
+        }
+        @media (max-width: 768px) { .glass-card { padding: 25px; } }
+        @media (max-width: 480px) { .glass-card { padding: 20px; } }
+        .hidden { display: none !important; }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 160px;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn:hover { background: #002244; transform: translateY(-2px); }
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--gold);
+        }
+        .btn-secondary:hover { background: #fef9e7; }
+
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        #timer {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            background: white;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1), 0 0 0 4px var(--gold);
+            font-family: 'Space Grotesk', monospace;
+            margin-bottom: 15px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0 15px;
+        }
+        #counter {
+            background: #e9edf2;
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-weight: 600;
+        }
+        #question-text {
+            background: white;
+            padding: 25px;
+            border-radius: 30px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--glass-border);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .quiz-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0 30px;
+        }
+        .quiz-btn {
+            flex: 1;
+            max-width: 220px;
+            padding: 18px 25px;
+            border-radius: 60px;
+            border: 3px solid;
+            font-weight: 700;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .quiz-btn.true-btn { border-color: #28a745; color: #28a745; }
+        .quiz-btn.false-btn { border-color: #dc3545; color: #dc3545; }
+        .quiz-btn.true-btn:hover { background: #28a745; color: white; }
+        .quiz-btn.false-btn:hover { background: #dc3545; color: white; }
+        .quiz-btn.correct { background: var(--success); color: white; border-color: #1e7e34; }
+        .quiz-btn.wrong { background: var(--danger); color: white; border-color: #b02a37; }
+
+        #robot-bubble {
+            display: none;
+            background: #1e2f4e;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 30px 30px 30px 10px;
+            margin: 15px 0;
+            border-left: 5px solid var(--gold);
+            font-size: 1rem;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        @media (max-width: 640px) { .charts-row { grid-template-columns: 1fr; } }
+        .chart-card {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(5px);
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid var(--glass-border);
+        }
+        canvas { max-height: 220px; width: 100% !important; }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        #res-name { font-size: 2.5rem; margin-bottom: 5px; }
+        #res-score { font-size: 3.5rem; font-weight: 800; color: var(--success); }
+
+        .badges-container {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .badge {
+            background: linear-gradient(135deg, var(--gold), #e6c74c);
+            color: var(--primary);
+            padding: 10px 25px;
+            border-radius: 60px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 25px 0;
+        }
+        @media (max-width: 640px) { .stats-grid { grid-template-columns: 1fr; } }
+
+        .orientation-banner {
+            background: linear-gradient(115deg, var(--primary), #0b4b7a);
+            color: white;
+            border-radius: 60px;
+            padding: 18px 25px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            font-weight: 600;
+            font-size: 1.2rem;
+            border: 2px solid var(--gold);
+        }
+
+        .share-section {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 25px 0;
+        }
+        .share-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 2px solid var(--gold);
+        }
+        .share-btn:hover { background: var(--gold); color: var(--primary); transform: scale(1.1); }
+
+        .journal-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .journal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        .ai-card {
+            background: linear-gradient(115deg, #ffffff, #f8f6f0);
+            border-radius: 30px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        #ai-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid var(--gold);
+            border-radius: 60px;
+            font-size: 1rem;
+            margin: 15px 0;
+        }
+
+        details {
+            background: rgba(212,175,55,0.1);
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .recommandation-section {
+            background: linear-gradient(135deg, #f8f4e8, #fff9f0);
+            border-radius: 30px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid var(--gold);
+            text-align: center;
+        }
+        .dark-mode .recommandation-section {
+            background: #2a3442;
+            color: #e2e8f0;
+        }
+        .recommandation-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        .recommandation-pourcentage {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--success);
+            margin: 10px 0;
+        }
+        .recommandation-conseil {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            padding: 15px;
+            background: rgba(212,175,55,0.1);
+            border-radius: 20px;
+        }
+
+        .footer {
+            background: #0a1a2b;
+            color: #a0b3c9;
+            padding: 50px 20px 30px;
+            margin-top: 40px;
+            border-top-left-radius: 40px;
+            border-top-right-radius: 40px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer-logo { font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 15px; }
+        .footer-social { display: flex; gap: 15px; margin-top: 15px; }
+        .footer-social a {
+            width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white;
+            transition: 0.2s;
+        }
+        .footer-social a:hover { background: var(--gold); color: var(--primary); }
+        .footer-links { list-style: none; }
+        .footer-links a {
+            color: #a0b3c9; text-decoration: none; display: inline-block; margin: 8px 0;
+            transition: 0.2s;
+        }
+        .footer-links a:hover { color: var(--gold); transform: translateX(5px); }
+        .newsletter-form { display: flex; background: white; border-radius: 60px; overflow: hidden; margin-top: 15px; }
+        .newsletter-form input { flex: 1; padding: 12px 15px; border: none; outline: none; }
+        .newsletter-form button { background: var(--gold); border: none; padding: 0 20px; cursor: pointer; color: var(--primary); }
+        .footer-bottom { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+
+        .toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--primary); color: white; padding: 12px 30px; border-radius: 60px;
+            box-shadow: var(--shadow-md); border-left: 5px solid var(--gold);
+            transition: transform 0.3s; z-index: 10000;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+    </style>
+</head>
+<body>
+    <!-- ROBOT D'ACCUEIL -->
+    <div id="welcomeRobot" class="welcome-robot">
+        <div class="robot-avatar">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="robot-speech" id="robotWelcomeMsg">
+            <span id="welcomeText">Bienvenue au CSAO. Un quiz sur ordinateur pour t'orienter.</span>
+            <div class="robot-close" onclick="closeWelcomeRobot()"><i class="fas fa-times"></i></div>
+        </div>
+    </div>
+
+    <div class="header-controls">
+        <div class="control-btn" onclick="toggleDarkMode()" id="darkModeToggle"><i class="fas fa-moon"></i></div>
+        <div class="control-btn" onclick="toggleFullScreen()"><i class="fas fa-expand"></i></div>
+        <div class="control-btn" onclick="toggleExamMode()" id="examModeToggle"><i class="fas fa-gavel"></i></div>
+        <div class="control-btn" onclick="window.location.reload()"><i class="fas fa-redo-alt"></i></div>
+    </div>
+
+    <canvas id="confetti-canvas" style="display: none;"></canvas>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1><i class="fas fa-map"></i> CSAO · QUIZ</h1>
+            <p>Centre Spatial et d'Orientation · Trouve ta voie</p>
+        </div>
+    </header>
+
+    <main class="glass-card" id="main-card">
+        <!-- Écran 1 : choix série -->
+        <div id="quiz-box">
+            <div style="text-align: center;">
+                <span class="badge" style="display: inline-block; margin-bottom: 20px;">📌 SÉLECTIONNE TON NIVEAU</span>
+                <div class="btn-group">
+                    <button class="btn" onclick="startSeries('3eme')"><i class="fas fa-flask"></i> 3ème · Brevet</button>
+                    <button class="btn btn-secondary" onclick="startSeries('2nde')"><i class="fas fa-dna"></i> 2nde · Seconde</button>
+                </div>
+                <p style="margin-top: 30px; color: #64748b;"><i class="fas fa-robot"></i> 50 questions aléatoires parmi 120 · Analyse vocale</p>
+            </div>
+        </div>
+
+        <!-- Écran 2 : quiz -->
+        <div id="step-quiz" class="hidden">
+            <div class="timer-container">
+                <div id="timer">04:00</div>
+                <div class="progress-bar"><div id="progress-fill"></div></div>
+            </div>
+
+            <div class="question-header">
+                <span id="counter"><i class="fas fa-question"></i> 01/50</span>
+                <span style="color: var(--gold);"><i class="fas fa-microphone-alt"></i> Robot actif</span>
+            </div>
+            <div id="question-text">Chargement...</div>
+
+            <div id="robot-bubble"><i class="fas fa-robot"></i> <span id="bubble-msg">Assistant vocal</span></div>
+
+            <div class="quiz-actions">
+                <button class="quiz-btn true-btn" onclick="handleAnswer(true, event)"><i class="fas fa-check-circle"></i> VRAI</button>
+                <button class="quiz-btn false-btn" onclick="handleAnswer(false, event)"><i class="fas fa-times-circle"></i> FAUX</button>
+            </div>
+
+            <div class="charts-row">
+                <div class="chart-card">
+                    <h4 style="margin-bottom: 10px; color: var(--gold);">📊 Profil en temps réel</h4>
+                    <canvas id="radarChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h4 style="margin-bottom: 10px; color: var(--gold);">📈 Scores par série</h4>
+                    <canvas id="statsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Écran 3 : résultat -->
+        <div id="step-result" class="hidden">
+            <div class="result-header">
+                <h1 id="res-name">NOM</h1>
+                <div id="res-score">0/50</div>
+            </div>
+
+            <div id="badges-container" class="badges-container"></div>
+
+            <div class="recommandation-section" id="recommandation-section">
+                <div class="recommandation-title">🎯 RECOMMANDATION CSAO</div>
+                <div class="recommandation-pourcentage" id="recommandation-pourcentage">0%</div>
+                <div class="recommandation-conseil" id="recommandation-conseil">Termine le quiz pour voir ton orientation</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="chart-card">
+                    <h4 style="color: var(--gold); margin-bottom: 15px;"><i class="fas fa-chart-pie"></i> Répartition</h4>
+                    <canvas id="resultStatsChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h4 style="color: var(--gold); margin-bottom: 15px;"><i class="fas fa-bullseye"></i> Points forts</h4>
+                    <div id="strengths-list" style="margin-bottom: 25px;"></div>
+                    <h4 style="color: var(--gold); margin-bottom: 10px;"><i class="fas fa-tools"></i> À améliorer</h4>
+                    <div id="weaknesses-list"></div>
+                </div>
+            </div>
+
+            <div class="orientation-banner">
+                <i class="fas fa-compass fa-2x"></i>
+                <span id="orientation-text">Série dominante</span>
+            </div>
+
+            <div class="share-section">
+                <div class="share-btn" onclick="shareResult('whatsapp')"><i class="fab fa-whatsapp"></i></div>
+                <div class="share-btn" onclick="shareResult('twitter')"><i class="fab fa-x-twitter"></i></div>
+                <div class="share-btn" onclick="shareResult('facebook')"><i class="fab fa-facebook-f"></i></div>
+                <div class="share-btn" onclick="exportPDF()"><i class="fas fa-file-pdf"></i></div>
+            </div>
+
+            <div class="journal-card">
+                <div class="journal-header" onclick="toggleLog()">
+                    <span><i class="fas fa-history"></i> Journal des réponses</span>
+                    <i class="fas fa-chevron-down" id="log-chevron"></i>
+                </div>
+                <div id="log-content" style="display: none; max-height: 250px; overflow-y: auto; margin-top: 15px;"></div>
+            </div>
+
+            <div class="ai-card">
+                <h3><i class="fas fa-brain" style="color: var(--gold);"></i> Conseil IA personnalisé</h3>
+                <input type="text" id="ai-input" placeholder="Ex: métiers, salaire, études...">
+                <button class="btn" style="width: 100%;" onclick="runAI()"><i class="fas fa-microchip"></i> ANALYSER</button>
+                <div id="ai-bubble" style="background: #e4eefa; padding: 15px; border-radius: 20px; margin-top: 15px; display: none; border-left: 5px solid var(--primary);"></div>
+            </div>
+
+            <details>
+                <summary>📚 Questions fréquentes</summary>
+                <p><strong>Quelles études après ?</strong> Licence, BTS ou grande école selon profil.</p>
+                <p><strong>Débouchés au Cameroun ?</strong> Numérique, santé, génie civil.</p>
+            </details>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo"><i class="fas fa-graduation-cap"></i> CSAO Quiz</div>
+                <p>Centre Spatial et d'Orientation · Trouve ta voie.</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4>Navigation</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="page1.html">Apropos</a></li>
+                    <li><a href="#">Orientation IA</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Contact</h4>
+                <p><i class="fas fa-envelope"></i> contact@csao.cm</p>
+                <p><i class="fas fa-phone"></i> +237 699 123 456</p>
+            </div>
+            <div>
+                <h4>Newsletter</h4>
+                <div class="newsletter-form">
+                    <input type="email" placeholder="Votre email">
+                    <button onclick="showToast('Inscription simulée')"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div><i class="far fa-copyright"></i> 2026 CSAO · 240 questions</div>
+        </div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+
+    <!-- Sons (optionnels) -->
+    <audio id="sound-correct" preload="auto">
+        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sound-wrong" preload="auto">
+        <source src="https://www.soundjay.com/misc/sounds/buzzer-or-wrong-answer-01.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // ==================== 120 QUESTIONS POUR 3ÈME ====================
+        const db3eme = [
+            // SÉRIE C (24)
+            {q: "La racine carrée de 144 est 12.", a: true, c: "C"},
+            {q: "10 au carré vaut 100.", a: true, c: "C"},
+            {q: "P = m x g exprime le poids.", a: true, c: "C"},
+            {q: "La vitesse v = d / t.", a: true, c: "C"},
+            {q: "L'unité de force est le Newton.", a: true, c: "C"},
+            {q: "Un octogone a 8 côtés.", a: true, c: "C"},
+            {q: "Un triangle rectangle a un angle droit.", a: true, c: "C"},
+            {q: "3,14 est une valeur approchée de π.", a: true, c: "C"},
+            {q: "L'énergie se mesure en Joules.", a: true, c: "C"},
+            {q: "Un atome est électriquement neutre.", a: true, c: "C"},
+            {q: "Le fer est un conducteur électrique.", a: true, c: "C"},
+            {q: "La mole est l'unité de quantité de matière.", a: true, c: "C"},
+            {q: "Un pH acide est inférieur à 7.", a: true, c: "C"},
+            {q: "La lumière se déplace à 300 000 km/s.", a: true, c: "C"},
+            {q: "U = R x I est la loi d'Ohm.", a: true, c: "C"},
+            {q: "La masse se mesure en kilogrammes.", a: true, c: "C"},
+            {q: "Le volume se mesure en mètres cubes.", a: true, c: "C"},
+            {q: "La température s'exprime en degrés Celsius.", a: true, c: "C"},
+            {q: "L'eau bout à 100°C au niveau de la mer.", a: true, c: "C"},
+            {q: "La glace fond à 0°C.", a: true, c: "C"},
+            {q: "Un nombre premier n'a que deux diviseurs.", a: true, c: "C"},
+            {q: "12 est un nombre pair.", a: true, c: "C"},
+            {q: "Le périmètre d'un carré de côté 5 est 20.", a: true, c: "C"},
+            {q: "L'aire d'un rectangle de 3 sur 4 est 12.", a: true, c: "C"},
+            // SÉRIE SH (24)
+            {q: "Le mur de Berlin est tombé en 1989.", a: true, c: "SH"},
+            {q: "L'esclavage fut aboli en 1848.", a: true, c: "SH"},
+            {q: "L'ONU est née en 1945.", a: true, c: "SH"},
+            {q: "Napoléon a perdu à Waterloo.", a: true, c: "SH"},
+            {q: "La France est une République.", a: true, c: "SH"},
+            {q: "L'apartheid fut en Afrique du Sud.", a: true, c: "SH"},
+            {q: "Samuel Eto'o a gagné la CAN avec le Cameroun.", a: true, c: "SH"},
+            {q: "Le Cameroun a participé à la Coupe du monde 2022.", a: true, c: "SH"},
+            {q: "Roger Milla a marqué en Coupe du monde à 42 ans.", a: true, c: "SH"},
+            {q: "Yaoundé est la capitale politique du Cameroun.", a: true, c: "SH"},
+            {q: "Douala est la capitale économique du Cameroun.", a: true, c: "SH"},
+            {q: "Le Mont Cameroun est un volcan actif.", a: true, c: "SH"},
+            {q: "Le Cameroun compte plus de 200 ethnies.", a: true, c: "SH"},
+            {q: "Ahmadou Ahidjo fut le premier président du Cameroun.", a: true, c: "SH"},
+            {q: "Le Cameroun est membre de la CEMAC.", a: true, c: "SH"},
+            {q: "La langue officielle du Cameroun est le français et l'anglais.", a: true, c: "SH"},
+            {q: "Les éléphants de forêt vivent au Cameroun.", a: true, c: "SH"},
+            {q: "Le lac Tchad est partagé avec le Cameroun.", a: true, c: "SH"},
+            {q: "Le fleuve Sanaga est le plus long du Cameroun.", a: true, c: "SH"},
+            {q: "La Première Guerre mondiale a débuté en 1914.", a: true, c: "SH"},
+            {q: "La Seconde Guerre mondiale a pris fin en 1945.", a: true, c: "SH"},
+            {q: "Nelson Mandela a lutté contre l'apartheid.", a: true, c: "SH"},
+            {q: "Martin Luther King était un défenseur des droits civiques.", a: true, c: "SH"},
+            {q: "La révolution française a eu lieu en 1789.", a: true, c: "SH"},
+            // SÉRIE SES (24)
+            {q: "L'inflation est une hausse des prix.", a: true, c: "SES"},
+            {q: "Un monopole = un seul vendeur.", a: true, c: "SES"},
+            {q: "L'offre baisse quand le prix monte.", a: false, c: "SES"},
+            {q: "La TVA est un impôt indirect.", a: true, c: "SES"},
+            {q: "Le troc se fait sans argent.", a: true, c: "SES"},
+            {q: "Un budget prévoit les recettes.", a: true, c: "SES"},
+            {q: "Le PIB mesure la richesse produite dans un pays.", a: true, c: "SES"},
+            {q: "L'offre et la demande déterminent les prix.", a: true, c: "SES"},
+            {q: "Une entreprise privée appartient à l'État.", a: false, c: "SES"},
+            {q: "La mondialisation augmente les échanges entre pays.", a: true, c: "SES"},
+            {q: "Le chômage est l'absence d'emploi pour ceux qui cherchent.", a: true, c: "SES"},
+            {q: "Un salaire est la rémunération du travail.", a: true, c: "SES"},
+            {q: "La banque centrale contrôle la monnaie.", a: true, c: "SES"},
+            {q: "L'impôt sur le revenu est un impôt direct.", a: true, c: "SES"},
+            {q: "Le franc CFA est la monnaie du Cameroun.", a: true, c: "SES"},
+            {q: "L'économie de marché repose sur la libre concurrence.", a: true, c: "SES"},
+            {q: "Un syndicat défend les intérêts des travailleurs.", a: true, c: "SES"},
+            {q: "La croissance économique est l'augmentation du PIB.", a: true, c: "SES"},
+            {q: "Une récession est une baisse de l'activité économique.", a: true, c: "SES"},
+            {q: "L'épargne est la partie du revenu non consommée.", a: true, c: "SES"},
+            {q: "Un crédit est un prêt d'argent.", a: true, c: "SES"},
+            {q: "L'action est un titre de propriété d'une entreprise.", a: true, c: "SES"},
+            {q: "La bourse est le marché des actions.", a: true, c: "SES"},
+            {q: "L'OMC organise le commerce mondial.", a: true, c: "SES"},
+            // SÉRIE STT (24)
+            {q: "Un octet vaut 8 bits.", a: true, c: "STT"},
+            {q: "Excel est un tableur.", a: true, c: "STT"},
+            {q: "Le CPU est le processeur.", a: true, c: "STT"},
+            {q: "Le marketing analyse les besoins.", a: true, c: "STT"},
+            {q: "HTML est un langage de programmation.", a: false, c: "STT"},
+            {q: "Une adresse IP identifie un appareil.", a: true, c: "STT"},
+            {q: "La comptabilité enregistre les flux financiers.", a: true, c: "STT"},
+            {q: "Un bilan comptable présente l'actif et le passif.", a: true, c: "STT"},
+            {q: "Le marketing mix comprend les 4P.", a: true, c: "STT"},
+            {q: "Un logiciel de gestion intégré s'appelle ERP.", a: true, c: "STT"},
+            {q: "La RAM est une mémoire volatile.", a: true, c: "STT"},
+            {q: "Un disque dur stocke des données.", a: true, c: "STT"},
+            {q: "Windows est un système d'exploitation.", a: true, c: "STT"},
+            {q: "Linux est un système d'exploitation libre.", a: true, c: "STT"},
+            {q: "Une base de données stocke des informations structurées.", a: true, c: "STT"},
+            {q: "SQL est un langage de requêtes.", a: true, c: "STT"},
+            {q: "Le cloud computing permet de stocker en ligne.", a: true, c: "STT"},
+            {q: "La cybersécurité protège les systèmes informatiques.", a: true, c: "STT"},
+            {q: "Un pare-feu protège un réseau.", a: true, c: "STT"},
+            {q: "Un virus informatique peut endommager des fichiers.", a: true, c: "STT"},
+            {q: "Le wifi utilise des ondes radio.", a: true, c: "STT"},
+            {q: "La fibre optique transmet des données par la lumière.", a: true, c: "STT"},
+            {q: "Un routeur connecte des réseaux entre eux.", a: true, c: "STT"},
+            {q: "Le protocole HTTP sert à naviguer sur le web.", a: true, c: "STT"},
+            // SÉRIE A (24)
+            {q: "Molière est l'auteur de 'L'Avare'.", a: true, c: "A"},
+            {q: "Victor Hugo a écrit 'Les Misérables'.", a: true, c: "A"},
+            {q: "Zola est un auteur naturaliste.", a: true, c: "A"},
+            {q: "Un sonnet a 14 vers.", a: true, c: "A"},
+            {q: "Un quatrain a 4 vers.", a: true, c: "A"},
+            {q: "L'incipit est le début d'un livre.", a: true, c: "A"},
+            {q: "Le mot 'philosophie' vient du grec.", a: true, c: "A"},
+            {q: "Le classicisme est un mouvement littéraire du XVIIe siècle.", a: true, c: "A"},
+            {q: "Le romantisme privilégie l'expression des sentiments.", a: true, c: "A"},
+            {q: "Une métaphore est une comparaison sans outil de comparaison.", a: true, c: "A"},
+            {q: "Le théâtre classique respecte la règle des trois unités.", a: true, c: "A"},
+            {q: "La peinture 'La Joconde' est de Léonard de Vinci.", a: true, c: "A"},
+            {q: "Le surréalisme est né au XXe siècle.", a: true, c: "A"},
+            {q: "Voltaire a écrit 'Candide'.", a: true, c: "A"},
+            {q: "Rousseau est un philosophe des Lumières.", a: true, c: "A"},
+            {q: "La poésie lyrique exprime des sentiments personnels.", a: true, c: "A"},
+            {q: "Une tragédie se termine généralement mal.", a: true, c: "A"},
+            {q: "Une comédie vise à faire rire.", a: true, c: "A"},
+            {q: "Le roman 'Le Petit Prince' est de Saint-Exupéry.", a: true, c: "A"},
+            {q: "La Fontaine est célèbre pour ses fables.", a: true, c: "A"},
+            {q: "Baudelaire a écrit 'Les Fleurs du mal'.", a: true, c: "A"},
+            {q: "Le mouvement des Lumières prône la raison.", a: true, c: "A"},
+            {q: "L'humanisme valorise l'être humain.", a: true, c: "A"},
+            {q: "Le baroque se caractérise par l'exubérance.", a: true, c: "A"}
+        ];
+
+        // ===== 120 QUESTIONS POUR LA 2NDE (C, D, TI) =====
+        const db2nde = [
+            // SÉRIE C (40)
+            {q: "U = R x I est la loi d'Ohm.", a: true, c: "C"},
+            {q: "Ec = 1/2 mv².", a: true, c: "C"},
+            {q: "La lumière va à 300 000 km/s.", a: true, c: "C"},
+            {q: "La mole est l'unité de quantité de matière.", a: true, c: "C"},
+            {q: "Le fer est un conducteur électrique.", a: true, c: "C"},
+            {q: "L'atome est électriquement neutre.", a: true, c: "C"},
+            {q: "Un pH acide est inférieur à 7.", a: true, c: "C"},
+            {q: "L'énergie se mesure en Joules.", a: true, c: "C"},
+            {q: "La loi de la gravitation est de Newton.", a: true, c: "C"},
+            {q: "Le champ magnétique terrestre nous protège.", a: true, c: "C"},
+            {q: "Un vecteur a une direction, un sens et une norme.", a: true, c: "C"},
+            {q: "La force est une grandeur vectorielle.", a: true, c: "C"},
+            {q: "Le poids est une force.", a: true, c: "C"},
+            {q: "La masse est une grandeur scalaire.", a: true, c: "C"},
+            {q: "L'accélération est le taux de variation de la vitesse.", a: true, c: "C"},
+            {q: "La vitesse est en m/s.", a: true, c: "C"},
+            {q: "La pression se mesure en Pascals.", a: true, c: "C"},
+            {q: "L'énergie cinétique dépend de la masse et de la vitesse.", a: true, c: "C"},
+            {q: "L'énergie potentielle dépend de la hauteur.", a: true, c: "C"},
+            {q: "La conservation de l'énergie est un principe fondamental.", a: true, c: "C"},
+            {q: "Les ondes sonores sont des ondes mécaniques.", a: true, c: "C"},
+            {q: "La fréquence se mesure en Hertz.", a: true, c: "C"},
+            {q: "La longueur d'onde est notée λ.", a: true, c: "C"},
+            {q: "La diffraction est un phénomène ondulatoire.", a: true, c: "C"},
+            {q: "La réfraction change la direction de la lumière.", a: true, c: "C"},
+            {q: "L'optique géométrique utilise des rayons lumineux.", a: true, c: "C"},
+            {q: "Une lentille convergente grossit les objets.", a: true, c: "C"},
+            {q: "Un miroir plan donne une image virtuelle.", a: true, c: "C"},
+            {q: "L'électricité est le mouvement des électrons.", a: true, c: "C"},
+            {q: "La tension se mesure en Volts.", a: true, c: "C"},
+            {q: "L'intensité se mesure en Ampères.", a: true, c: "C"},
+            {q: "La résistance se mesure en Ohms.", a: true, c: "C"},
+            {q: "Un circuit en série a un seul chemin.", a: true, c: "C"},
+            {q: "Un circuit en parallèle a plusieurs chemins.", a: true, c: "C"},
+            {q: "La puissance électrique est P = U x I.", a: true, c: "C"},
+            {q: "L'énergie électrique est E = P x t.", a: true, c: "C"},
+            {q: "Le courant continu est produit par une pile.", a: true, c: "C"},
+            {q: "Le courant alternatif est utilisé dans les maisons.", a: true, c: "C"},
+            {q: "Un transformateur modifie la tension.", a: true, c: "C"},
+            {q: "Un générateur produit de l'électricité.", a: true, c: "C"},
+            // SÉRIE D (40)
+            {q: "L'ADN est une double hélice.", a: true, c: "D"},
+            {q: "La mitose produit 2 cellules identiques.", a: true, c: "D"},
+            {q: "Le cœur humain a 4 cavités.", a: true, c: "D"},
+            {q: "L'insuline est produite par le pancréas.", a: true, c: "D"},
+            {q: "La sève brute monte par le xylème.", a: true, c: "D"},
+            {q: "La méiose donne 4 gamètes.", a: true, c: "D"},
+            {q: "L'ARN est un seul brin.", a: true, c: "D"},
+            {q: "Les reins filtrent le sang.", a: true, c: "D"},
+            {q: "Le génome est dans le noyau.", a: true, c: "D"},
+            {q: "La photosynthèse produit du dioxygène.", a: true, c: "D"},
+            {q: "La cellule est l'unité du vivant.", a: true, c: "D"},
+            {q: "Les chloroplastes font la photosynthèse.", a: true, c: "D"},
+            {q: "Les mitochondries produisent l'énergie.", a: true, c: "D"},
+            {q: "Le noyau contient l'ADN.", a: true, c: "D"},
+            {q: "La membrane plasmique délimite la cellule.", a: true, c: "D"},
+            {q: "L'évolution des espèces est expliquée par Darwin.", a: true, c: "D"},
+            {q: "La sélection naturelle favorise les plus adaptés.", a: true, c: "D"},
+            {q: "Les fossiles sont des traces d'êtres vivants anciens.", a: true, c: "D"},
+            {q: "L'espèce humaine appartient aux primates.", a: true, c: "D"},
+            {q: "Le squelette humain a 206 os.", a: true, c: "D"},
+            {q: "Les muscles sont attachés aux os par les tendons.", a: true, c: "D"},
+            {q: "Le système nerveux comprend le cerveau et les nerfs.", a: true, c: "D"},
+            {q: "Le neurone est la cellule nerveuse.", a: true, c: "D"},
+            {q: "Le cerveau contrôle les fonctions vitales.", a: true, c: "D"},
+            {q: "La moelle épinière transmet les messages nerveux.", a: true, c: "D"},
+            {q: "Les hormones sont des messagers chimiques.", a: true, c: "D"},
+            {q: "La thyroïde régule le métabolisme.", a: true, c: "D"},
+            {q: "La reproduction sexuée nécessite deux parents.", a: true, c: "D"},
+            {q: "Les chromosomes portent les gènes.", a: true, c: "D"},
+            {q: "Un gène est une portion d'ADN.", a: true, c: "D"},
+            {q: "Les allèles sont des versions d'un gène.", a: true, c: "D"},
+            {q: "Le groupe sanguin est déterminé par des gènes.", a: true, c: "D"},
+            {q: "Les bactéries sont des organismes unicellulaires.", a: true, c: "D"},
+            {q: "Les virus ne sont pas des cellules.", a: true, c: "D"},
+            {q: "Le système immunitaire combat les infections.", a: true, c: "D"},
+            {q: "Les anticorps neutralisent les pathogènes.", a: true, c: "D"},
+            {q: "Les vaccins stimulent l'immunité.", a: true, c: "D"},
+            {q: "Les antibiotiques tuent les bactéries.", a: true, c: "D"},
+            {q: "La dérive génétique modifie aléatoirement les gènes.", a: true, c: "D"},
+            {q: "La biodiversité est la variété des espèces.", a: true, c: "D"},
+            // SÉRIE TI (40)
+            {q: "Python est un langage de programmation.", a: true, c: "TI"},
+            {q: "Le binaire utilise 0 et 1.", a: true, c: "TI"},
+            {q: "La RAM est une mémoire volatile.", a: true, c: "TI"},
+            {q: "SQL sert aux bases de données.", a: true, c: "TI"},
+            {q: "HTTP est un protocole web.", a: true, c: "TI"},
+            {q: "Le Wi-Fi utilise des ondes radio.", a: true, c: "TI"},
+            {q: "Un bug est une erreur de code.", a: true, c: "TI"},
+            {q: "Java et JavaScript sont le même langage.", a: false, c: "TI"},
+            {q: "Une adresse MAC est unique.", a: true, c: "TI"},
+            {q: "HTML est un langage de programmation.", a: false, c: "TI"},
+            {q: "CSS sert à styliser les pages web.", a: true, c: "TI"},
+            {q: "JavaScript rend les pages interactives.", a: true, c: "TI"},
+            {q: "Un algorithme est une suite d'instructions.", a: true, c: "TI"},
+            {q: "Une variable stocke une valeur.", a: true, c: "TI"},
+            {q: "Une boucle répète des instructions.", a: true, c: "TI"},
+            {q: "Une condition (if) permet de faire des choix.", a: true, c: "TI"},
+            {q: "Une fonction est un bloc de code réutilisable.", a: true, c: "TI"},
+            {q: "Les commentaires aident à comprendre le code.", a: true, c: "TI"},
+            {q: "Git est un logiciel de gestion de versions.", a: true, c: "TI"},
+            {q: "GitHub permet d'héberger du code.", a: true, c: "TI"},
+            {q: "Un site web statique utilise HTML, CSS et JS.", a: true, c: "TI"},
+            {q: "Un site dynamique utilise une base de données.", a: true, c: "TI"},
+            {q: "PHP est un langage serveur.", a: true, c: "TI"},
+            {q: "Node.js permet d'utiliser JS côté serveur.", a: true, c: "TI"},
+            {q: "React est une bibliothèque JavaScript.", a: true, c: "TI"},
+            {q: "Angular est un framework JavaScript.", a: true, c: "TI"},
+            {q: "Vue.js est un framework JavaScript progressif.", a: true, c: "TI"},
+            {q: "Une API permet à des applications de communiquer.", a: true, c: "TI"},
+            {q: "JSON est un format d'échange de données.", a: true, c: "TI"},
+            {q: "XML est aussi un format de données.", a: true, c: "TI"},
+            {q: "Le protocole HTTPS est sécurisé.", a: true, c: "TI"},
+            {q: "Un certificat SSL garantit la sécurité.", a: true, c: "TI"},
+            {q: "Un pirate informatique est un hacker.", a: true, c: "TI"},
+            {q: "Le phishing est une technique d'arnaque.", a: true, c: "TI"},
+            {q: "Un mot de passe fort contient des caractères variés.", a: true, c: "TI"},
+            {q: "L'authentification à deux facteurs renforce la sécurité.", a: true, c: "TI"},
+            {q: "Un VPN masque votre adresse IP.", a: true, c: "TI"},
+            {q: "Le Big Data désigne de très gros volumes de données.", a: true, c: "TI"},
+            {q: "L'intelligence artificielle simule l'intelligence humaine.", a: true, c: "TI"},
+            {q: "Le machine learning est une sous-catégorie de l'IA.", a: true, c: "TI"}
+        ];
+
+        const db = { "3eme": db3eme, "2nde": db2nde };
+
+        // ===== VARIABLES GLOBALES =====
+        let currentQ = [], idx = 0, scores = {}, log = [], timer, timeLeft = 240, userName = "";
+        let radarChart, statsChart, resultStatsChart;
+        let examMode = false;
+
+        const seriesNames = {
+            C: "⚛️ SÉRIE C (Maths/Physique)",
+            D: "🧬 SÉRIE D (SVT)",
+            TI: "💻 SÉRIE TI (TIC)",
+            SH: "🌍 SÉRIE SH (Sciences humaines)",
+            SES: "📊 SÉRIE SES (Économie)",
+            STT: "📈 SÉRIE STT (Gestion/Informatique)",
+            A: "📚 SÉRIE A (Lettres)"
+        };
+
+        const metiers = {
+            C: "Ingénieur, Architecte, Chercheur",
+            D: "Médecin, Pharmacien, Vétérinaire",
+            TI: "Dev, Expert cyber, Data scientist",
+            SH: "Psychologue, Sociologue, Historien, Enseignant",
+            SES: "Économiste, Banquier, Analyste financier",
+            STT: "Manager, Comptable, Entrepreneur",
+            A: "Avocat, Journaliste, Écrivain, Professeur"
+        };
+
+        // ===== ROBOT =====
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('welcomeText').innerText = "Bienvenue au CSAO. Un quiz sur ordinateur pour t'orienter. Tu vas répondre à 50 questions.";
+            }, 600);
+        });
+
+        window.closeWelcomeRobot = function() {
+            document.getElementById('welcomeRobot').style.display = 'none';
+        };
+
+        function robotSpeak(text) {
+            if (examMode) return;
+            if (!window.speechSynthesis) {
+                console.warn("Synthèse vocale non supportée");
+                return;
+            }
+            // Annuler les paroles en cours
+            window.speechSynthesis.cancel();
+
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'fr-FR';
+            msg.rate = 0.9;
+            msg.volume = 1;
+            msg.onerror = (e) => console.error("Erreur de synthèse", e);
+            window.speechSynthesis.speak(msg);
+
+            // Afficher la bulle
+            const bubble = document.getElementById('robot-bubble');
+            if (bubble) {
+                document.getElementById('bubble-msg').innerText = text;
+                bubble.style.display = 'flex';
+            }
+        }
+
+        // ===== FONCTIONS PRINCIPALES =====
+        window.startSeries = function(level) {
+            // Petite phrase de test pour débloquer la synthèse (interaction utilisateur)
+            if (!examMode && window.speechSynthesis) {
+                try {
+                    const testMsg = new SpeechSynthesisUtterance("Préparation du quiz");
+                    testMsg.lang = 'fr-FR';
+                    testMsg.rate = 0.9;
+                    window.speechSynthesis.speak(testMsg);
+                } catch (e) {}
+            }
+
+            userName = prompt("🇨🇲 Entre ton nom :")?.trim();
+            if (!userName) return alert("Nom requis");
+
+            robotSpeak(`Salut ${userName}, niveau ${level}. 50 questions pour déterminer ton profil.`);
+
+            document.getElementById('quiz-box').classList.add('hidden');
+            document.getElementById('step-quiz').classList.remove('hidden');
+            document.getElementById('step-result').classList.add('hidden');
+
+            let pool = db[level] || db["3eme"];
+            currentQ = [...pool].sort(() => Math.random() - 0.5).slice(0, 50);
+
+            if (level === '3eme') {
+                scores = { C:0, SH:0, SES:0, STT:0, A:0 };
+            } else {
+                scores = { C:0, D:0, TI:0 };
+            }
+
+            log = [];
+            timeLeft = examMode ? 180 : 240;
+
+            document.getElementById('res-name').innerText = userName.toUpperCase();
+            updateTimerDisplay();
+            document.getElementById('counter').innerHTML = `<i class="fas fa-question"></i> 01/50`;
+            initRadar(level);
+            initStatsChart(level);
+            showQuestion();
+            if (timer) clearInterval(timer);
+            timer = setInterval(updateTimer, 1000);
+        };
+
+        function updateTimerDisplay() {
+            let m = Math.floor(timeLeft/60);
+            let s = timeLeft%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0'+s:s}`;
+        }
+
+        function showQuestion() {
+            if (!currentQ[idx]) return;
+            const q = currentQ[idx];
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('progress-fill').style.width = `${(idx/currentQ.length)*100}%`;
+            document.getElementById('counter').innerHTML = `<i class="fas fa-question"></i> ${idx+1}/${currentQ.length}`;
+            if (!examMode) robotSpeak(`Question ${idx+1} : ${q.q}`);
+            document.querySelectorAll('.quiz-btn').forEach(b => b.classList.remove('correct','wrong'));
+        }
+
+        function updateTimer() {
+            if (timeLeft <= 0) { clearInterval(timer); endTest(); return; }
+            timeLeft--;
+            updateTimerDisplay();
+        }
+
+        window.handleAnswer = function(choice, e) {
+            if (!currentQ[idx]) return;
+            const q = currentQ[idx];
+            const correct = (choice === q.a);
+
+            log.push({question: q.q, answer: choice ? "VRAI":"FAUX", correct: correct ? "✔️":"❌"});
+            if (correct) scores[q.c]++;
+
+            // Sons (optionnels)
+            try {
+                let audio = document.getElementById(correct ? 'sound-correct' : 'sound-wrong');
+                if (audio) {
+                    audio.currentTime = 0;
+                    audio.play().catch(() => {});
+                }
+            } catch (er) {}
+
+            e.currentTarget.classList.add(correct ? 'correct' : 'wrong');
+            if (!examMode) robotSpeak(correct ? "Bravo !" : `Réponse: ${q.a ? "VRAI" : "FAUX"}`);
+
+            updateRadar();
+            if (statsChart) updateStatsChart();
+
+            idx++;
+            if (idx < currentQ.length) setTimeout(showQuestion, 400);
+            else setTimeout(endTest, 500);
+        };
+
+        function endTest() {
+            clearInterval(timer);
+            document.getElementById('step-quiz').classList.add('hidden');
+            document.getElementById('step-result').classList.remove('hidden');
+
+            const total = Object.values(scores).reduce((a,b)=>a+b,0);
+            document.getElementById('res-score').innerText = `${total}/${currentQ.length}`;
+
+            const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+            const top = sorted[0][0];
+            const topScore = sorted[0][1];
+            const pourcentage = Math.round((topScore / currentQ.length) * 100);
+
+            document.getElementById('orientation-text').innerText = seriesNames[top] || top;
+            document.getElementById('recommandation-pourcentage').innerText = `${pourcentage}%`;
+
+            let conseil = "";
+            if (pourcentage >= 80) {
+                conseil = `Excellent profil en ${seriesNames[top]} ! Tu as de solides aptitudes. Poursuis dans cette voie avec confiance. Métiers possibles : ${metiers[top]}.`;
+            } else if (pourcentage >= 60) {
+                conseil = `Bon profil en ${seriesNames[top]}. Tu as de bonnes bases. Renforce tes connaissances pour exceller. Pense aux métiers comme ${metiers[top]}.`;
+            } else if (pourcentage >= 40) {
+                conseil = `Profil moyen en ${seriesNames[top]}. Tu peux progresser avec de la pratique. Explore aussi d'autres séries pour trouver ta voie.`;
+            } else {
+                conseil = `Ton profil est encore en construction. Ne te décourage pas ! Explore différentes matières pour découvrir tes passions.`;
+            }
+            document.getElementById('recommandation-conseil').innerText = conseil;
+
+            const badges = document.getElementById('badges-container');
+            badges.innerHTML = '';
+            if (total === 50) { badges.innerHTML = '<div class="badge"><i class="fas fa-crown"></i> Génie · Parfait !</div>'; startConfetti(); }
+            else if (total >= 45) { badges.innerHTML = '<div class="badge"><i class="fas fa-medal"></i> Or · Excellent</div>'; }
+            else if (total >= 40) { badges.innerHTML = '<div class="badge"><i class="fas fa-medal"></i> Argent · Très bien</div>'; }
+            else if (total >= 35) { badges.innerHTML = '<div class="badge"><i class="fas fa-medal"></i> Bronze · Bien</div>'; }
+            else if (total >= 30) { badges.innerHTML = '<div class="badge"><i class="fas fa-medal"></i> Cuivre · Encouragement</div>'; }
+
+            document.getElementById('log-content').innerHTML = log.map((e,i) => 
+                `<div style="margin-bottom:10px; padding:10px; background:#f8fafd; border-radius:12px;">
+                    <b>Q${i+1}</b> ${e.question}<br>➤ ${e.answer} ${e.correct}
+                </div>`).join('');
+
+            const strengths = document.getElementById('strengths-list');
+            const weaknesses = document.getElementById('weaknesses-list');
+            strengths.innerHTML = ''; weaknesses.innerHTML = '';
+            Object.entries(scores).forEach(([serie, score]) => {
+                if (score >= 7) strengths.innerHTML += `<div><i class="fas fa-check-circle" style="color:#28a745"></i> ${serie}: ${score} pts</div>`;
+                else weaknesses.innerHTML += `<div><i class="fas fa-exclamation-triangle" style="color:#ff5722"></i> ${serie}: ${score} pts</div>`;
+            });
+
+            initResultStatsChart();
+
+            if (!examMode) robotSpeak(`${userName}, ton profil dominant est ${seriesNames[top]} avec ${pourcentage}%. ${conseil}`);
+        }
+
+        // ===== GRAPHIQUES =====
+        function initRadar(level) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            if (radarChart) radarChart.destroy();
+            let labels, data, maxValue;
+            if (level === '3eme') {
+                labels = ['C', 'SH', 'SES', 'STT', 'A'];
+                data = [0,0,0,0,0];
+                maxValue = 15;
+            } else {
+                labels = ['C', 'D', 'TI'];
+                data = [0,0,0];
+                maxValue = 25;
+            }
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: { labels, datasets: [{ label: 'score', data, backgroundColor: 'rgba(212,175,55,0.2)', borderColor: '#d4af37', borderWidth: 3 }] },
+                options: { responsive: true, maintainAspectRatio: true, scales: { r: { beginAtZero: true, max: maxValue } } }
+            });
+        }
+
+        function updateRadar() {
+            if (!radarChart) return;
+            const is3eme = Object.keys(scores).length === 5;
+            if (is3eme) {
+                radarChart.data.datasets[0].data = [scores.C||0, scores.SH||0, scores.SES||0, scores.STT||0, scores.A||0];
+            } else {
+                radarChart.data.datasets[0].data = [scores.C||0, scores.D||0, scores.TI||0];
+            }
+            radarChart.update();
+        }
+
+        function initStatsChart(level) {
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            if (statsChart) statsChart.destroy();
+            let labels, data;
+            if (level === '3eme') {
+                labels = ['C', 'SH', 'SES', 'STT', 'A'];
+                data = [0,0,0,0,0];
+            } else {
+                labels = ['C', 'D', 'TI'];
+                data = [0,0,0];
+            }
+            statsChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels, datasets: [{ label: 'Scores', data, backgroundColor: '#d4af37', borderRadius: 6 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function updateStatsChart() {
+            if (!statsChart) return;
+            const is3eme = Object.keys(scores).length === 5;
+            if (is3eme) {
+                statsChart.data.datasets[0].data = [scores.C||0, scores.SH||0, scores.SES||0, scores.STT||0, scores.A||0];
+            } else {
+                statsChart.data.datasets[0].data = [scores.C||0, scores.D||0, scores.TI||0];
+            }
+            statsChart.update();
+        }
+
+        function initResultStatsChart() {
+            const ctx = document.getElementById('resultStatsChart').getContext('2d');
+            if (resultStatsChart) resultStatsChart.destroy();
+            const is3eme = Object.keys(scores).length === 5;
+            let labels, data;
+            if (is3eme) {
+                labels = ['C', 'SH', 'SES', 'STT', 'A'];
+                data = [scores.C||0, scores.SH||0, scores.SES||0, scores.STT||0, scores.A||0];
+            } else {
+                labels = ['C', 'D', 'TI'];
+                data = [scores.C||0, scores.D||0, scores.TI||0];
+            }
+            resultStatsChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels, datasets: [{ label: 'Score final', data, backgroundColor: '#d4af37' }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
+            });
+        }
+
+        // ===== AUTRES FONCTIONS =====
+        window.toggleLog = function() {
+            const logContent = document.getElementById('log-content');
+            const chevron = document.getElementById('log-chevron');
+            if (logContent.style.display === 'none') { 
+                logContent.style.display = 'block'; 
+                chevron.className = 'fas fa-chevron-up'; 
+            } else { 
+                logContent.style.display = 'none'; 
+                chevron.className = 'fas fa-chevron-down'; 
+            }
+        };
+
+        window.shareResult = function(platform) {
+            const total = Object.values(scores).reduce((a,b)=>a+b,0);
+            const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+            const top = sorted[0]?.[0] || 'C';
+            const pourcentage = Math.round((sorted[0]?.[1] / currentQ.length) * 100);
+            const text = `J'ai obtenu ${total}/50 au CSAO. Mon profil dominant: ${seriesNames[top]} (${pourcentage}%). Découvre ton orientation !`;
+            if (platform === 'whatsapp') window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            else if (platform === 'twitter') window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+            showToast(`Partage ${platform}`);
+        };
+
+        window.exportPDF = function() { showToast('Export PDF (simulation)'); };
+
+        window.runAI = function() {
+            const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+            const top = sorted[0]?.[0] || 'C';
+            const question = document.getElementById('ai-input').value.toLowerCase();
+            let rep = `🔮 Profil: ${seriesNames[top]}. Métiers: ${metiers[top]}. `;
+            if (question.includes('salaire')) rep += "Salaires 250k-1M FCFA.";
+            else if (question.includes('avenir')) rep += "Secteurs porteurs: numérique, santé.";
+            else rep += "Études supérieures recommandées.";
+            const bubble = document.getElementById('ai-bubble');
+            bubble.innerText = rep;
+            bubble.style.display = 'block';
+            robotSpeak(rep);
+        };
+
+        function startConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            canvas.style.display = 'block';
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight;
+            const particles = [];
+            for (let i = 0; i < 80; i++) {
+                particles.push({ 
+                    x: Math.random() * canvas.width, 
+                    y: Math.random() * canvas.height, 
+                    vx: Math.random() * 2 - 1, 
+                    vy: Math.random() * 2 + 1, 
+                    size: Math.random() * 4 + 1, 
+                    color: `hsl(${Math.random() * 60 + 30}, 80%, 60%)` 
+                });
+            }
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => { 
+                    p.x += p.vx; 
+                    p.y += p.vy; 
+                    if (p.y > canvas.height) p.y = 0; 
+                    if (p.x > canvas.width) p.x = 0; 
+                    ctx.fillStyle = p.color; 
+                    ctx.fillRect(p.x, p.y, p.size, p.size); 
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+            setTimeout(() => canvas.style.display = 'none', 4000);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('#darkModeToggle i');
+            icon.className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else if (document.exitFullscreen) document.exitFullscreen();
+        }
+
+        function toggleExamMode() {
+            examMode = !examMode;
+            document.getElementById('examModeToggle').style.background = examMode ? '#d4af37' : '';
+            showToast(examMode ? 'Mode examen (sans vocal)' : 'Mode normal');
+        }
+    </script>
+</body>
+</html>
