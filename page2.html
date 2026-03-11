@@ -459,6 +459,24 @@
                 font-size: 1.8rem;
             }
         }
+        .navig{
+
+            color: white;
+            padding: 40px 10%;
+            text-align: center;
+        }
+        .navig a {
+
+            text-decoration: none;
+            color: rgb(255, 255, 255);
+            margin: 0 10px;
+            font-size: 1rem;
+            transition: .6s;
+        }
+        .navig a:hover{
+            color: #333;
+            background-color: white;
+        }
     </style>
 </head>
 <body>
@@ -467,6 +485,13 @@
         <div class="logo" onclick="action('🏢 DEV·14')">
             <i class="fas fa-cube"></i> NEXA·PTI
         </div>
+        <div class="navig">
+                <h4>Navigation</h4>
+                <a href="index.html">Accueil</a>
+                <a href="https://csao-advent.info/">Programmes</a>
+                <a href="p1.html">Admissions</a>
+                <a href="p1.html">A propos</a>
+            </div>
         <div class="stats">
             <span class="stat-item"><i class="fas fa-user-astronaut"></i> 14 dévs</span>
             <span class="stat-item"><i class="fas fa-code-branch"></i> 34 projets</span>
@@ -498,7 +523,7 @@
 
     <main class="gallery-14">
         <div class="section-header">
-            <h2 id="gridTitle"><i class="fas fa-cubes"></i> 14 ATHÉNIENNES · DÉVS</h2>
+            <h2 id="gridTitle"><i class="fas fa-cubes"></i> 14 NEXADIENS · DÉVS</h2>
             <span class="header-count" id="devCount">14 développeurs</span>
         </div>
         <div class="dev-grid" id="devGrid"></div>
@@ -528,20 +553,20 @@
     <script>
         // ========== 14 DÉVELOPPEURS (chemins images en local) ==========
         const developpeurs = [
-            { id:1, nom:"Owono Nkonda", role:"Fullstack", desc:"Architecte JavaScript & Rust. Leader tech.", tech:["React","Rust","Node.js"], image:"images/boris.jpg", expert:"15 ans" },
-            { id:2, nom:"Tatchouan", role:"Frontend", desc:"Animations CSS et trois.js. Génie du motion design.", tech:["Vue","GSAP","Three.js"], image:"images/chungi.jpg", expert:"16 ans" },
-            { id:3, nom:"Tsungui", role:"Frontend", desc:"Interface vocale et composants accessibles.", tech:["React","TypeScript","Jest"], image:"images/bonjour.jpg", expert:"16 ans" },
-            { id:4, nom:"Ngono Alinga", role:"Backend", desc:"API hautes performances, GraphQL, microservices.", tech:["Go","GraphQL","Kafka"], image:"images/gant-noir.jpg", expert:"16 ans" },
-            { id:5, nom:"Bétala", role:"Mobile", desc:"Expert Flutter et React Native. UI/UX mobile.", tech:["Flutter","Kotlin","Swift"], image:"images/betal.jpg", expert:"5 ans" },
-            { id:6, nom:"Malon", role:"Data", desc:"Data scientist, pipelines Python/Spark.", tech:["Python","SQL","TensorFlow"], image:"images/clara.jpg", expert:"4 ans" },
-            { id:7, nom:"Mathis", role:"DevOps", desc:"Infrastructure cloud, CI/CD, Docker/K8s.", tech:["AWS","Kubernetes","Terraform"], image:"images/mathis.jpg", expert:"5 ans" },
-            { id:8, nom:"Léa", role:"Backend", desc:"Node.js, PostgreSQL, sécurité.", tech:["Node.js","PostgreSQL","Redis"], image:"images/lea.jpg", expert:"4 ans" },
-            { id:9, nom:"Sofia", role:"Fullstack", desc:"MERN stack, passionnée par l'UI.", tech:["MongoDB","Express","React","Node"], image:"images/sofia.jpg", expert:"6 ans" },
-            { id:10, nom:"Adam", role:"Mobile", desc:"SwiftUI et Kotlin Multiplatform.", tech:["Swift","Kotlin","Jetpack"], image:"images/adam.jpg", expert:"4 ans" },
-            { id:11, nom:"Inès", role:"Frontend", desc:"Design system, Storybook, Tailwind.", tech:["Tailwind","Storybook","Vite"], image:"images/ines.jpg", expert:"4 ans" },
-            { id:12, nom:"Hugo", role:"Data", desc:"Big data, Spark, Airflow.", tech:["Scala","Spark","Airflow"], image:"images/hugo.jpg", expert:"5 ans" },
-            { id:13, nom:"Mehdi", role:"DevOps", desc:"SRE, monitoring, Prometheus/Grafana.", tech:["Prometheus","Grafana","Linux"], image:"images/mehdi.jpg", expert:"5 ans" },
-            { id:14, nom:"Camille", role:"Fullstack", desc:"Django + React, passionnée par l'open source.", tech:["Django","React","PostgreSQL"], image:"images/camille.jpg", expert:"4 ans" }
+            { id:1, nom:"OWONO NKONDA", role:"Frontend", desc:"Annimation CSS, Design et squelette HTML. Leader tech.", tech:["React","Rust","Node.js"], image:"images/Owono.png", expert:"15 ans" },
+            { id:2, nom:"TCHATCHOUA NGAMGA", role:"Frontend", desc:"Architecte JavaScript & Rust. Interface vocale et composants accessibles.", tech:["Vue","GSAP","Three.js"], image:"images/tchatchoua.jpg", expert:"16 ans" },
+            { id:3, nom:"TSUNGUI", role:"Frontend", desc:"", tech:["React","TypeScript","Jest"], image:"images/tsungui.jpg", expert:"16 ans" },
+            { id:4, nom:"NGONO ALINGA", role:"Backend", desc:"Montage Video CapCut,et voie off Adobe Premier Pro.", tech:["Go","GraphQL","Kafka"], image:"images/gant-noir.jpg", expert:"16 ans" },
+            { id:5, nom:"BETALA AMOUGOU", role:"Mobile", desc:"Expert Analiste et html.", tech:["ChatGPT-5","Google","Swift"], image:"images/betal.jpg", expert:"5 ans" },
+            { id:6, nom:"MALON MARIE", role:"Data", desc:"Monteuse video .", tech:["Capcut","Inshot","Adobe Premier Pro"], image:"images/clara.jpg", expert:"4 ans" },
+            { id:7, nom:"TCHAMDA ALEXANDRE", role:"DevOps", desc:"Infrastructure cloud, CI/CD, Docker/K8s.", tech:["AWS","Kubernetes","Terraform"], image:"images/Tchamda.jpg", expert:"16 ans" },
+            { id:8, nom:"DJUMKEP RAIZA", role:"Backend", desc:"Node.js, PostgreSQL, sécurité.", tech:["Node.js","PostgreSQL","Redis"], image:"images/lea.jpg", expert:"4 ans" },
+            { id:9, nom:"AMOU'OU BIDJA", role:"Fullstack", desc:"MERN stack, passionnée par l'UI.", tech:["MongoDB","Express","React","Node"], image:"images/sofia.jpg", expert:"6 ans" },
+            { id:10, nom:"MBOLO MBOLO", role:"Mobile", desc:"SwiftUI et Kotlin Multiplatform.", tech:["Swift","Kotlin","Jetpack"], image:"images/Mbolo.png", expert:"4 ans" },
+            { id:11, nom:"KOUAM TATCHIM", role:"Frontend", desc:"Design system, Storybook, Tailwind.", tech:["Tailwind","Storybook","Vite"], image:"images/Kouam.png", expert:"4 ans" },
+            { id:12, nom:"NJEUGOUE MIGUEL", role:"Data", desc:"Big data, Spark, Airflow.", tech:["Scala","Spark","Airflow"], image:"images/njeugoue.png", expert:"5 ans" },
+            { id:13, nom:"MVONDO NTSAMA", role:"DevOps", desc:"SRE, monitoring, Prometheus/Grafana.", tech:["Prometheus","Grafana","Linux"], image:"images/Njeugoue.jpg", expert:"5 ans" },
+            { id:14, nom:"TOMO LIONNEL", role:"Fullstack", desc:"Personalite de la dernierre minute.", tech:["Bloc Note","VS Code","PostgreSQL"], image:"images/camille.jpg", expert:"4 ans" }
         ];
 
         function genererCartes(filtreRole = "all") {
