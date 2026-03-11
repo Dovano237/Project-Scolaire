@@ -84,6 +84,11 @@
 
         .hero-content h1 { font-size: 3rem; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
         .hero-content p { font-size: 1.2rem; margin-bottom: 30px; }
+        .hero-content video {
+            width: 100%;
+            height: 300px;
+            border-radius: 8%;
+        }
 
         .btn {
             padding: 12px 30px;
@@ -111,6 +116,8 @@
     padding: 30px;
     border-radius: 10px;
     text-align: center;
+    justify-content: center;
+    align-items: center;
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     border-bottom: 4px solid var(--accent-gold);
     /* Empêche le contenu de déborder si besoin */
@@ -197,7 +204,7 @@
 
 .cards {
      width: 100%; /* Chaque carte prend toute la largeur */
-        height: 200px; /* On fixe une hauteur pour qu'elles restent visibles */
+        height: 300px; /* On fixe une hauteur pour qu'elles restent visibles */
         margin: 5px 0; /* Espacement vertical */
         flex: none; /* Désactive le partage de largeur flexbox */
     border-radius: 2rem;
@@ -212,22 +219,24 @@
 }
 
 /* L'astuce pour l'effet d'expansion au clic ou survol */
-.cards:hover {
-    flex: none; /* Désactive l'effet d'expansion horizontale sur mobile */
-        height: 300px; /* Optionnel : elles s'agrandissent en hauteur au toucher */
-}
 
 .cards[for="c1"] {
-    background-image: url(images/img1.PNG);
+    background-image: url(images/Gallerie/Owono.png);
 }
 .cards[for="c2"] {
-    background-image: url(images/img2.PNG);
+    background-image: url(images/Gallerie/tchatchoua.png);
 }
 .cards[for="c3"] {
-    background-image: url(images/img3.PNG);
+    background-image: url(images/Gallerie/Tsoungui.png);
 }
 .cards[for="c4"] {
-    background-image: url(images/img4.PNG);
+    background-image: url(images/Gallerie/Tchamda.png);
+}
+.cards[for="c5"] {
+    background-image: url(images/Gallerie/njeugoue.png);
+}
+.cards[for="c6"] {
+    background-image: url(images/Member/Groupe.jpg);
 }
 .row {
     color: #fff;
@@ -236,28 +245,7 @@
 input:checked + label {
     width: 600px;
 }
-#prev{
-    background: rgba(255,255,255,0.3);
-    border: none;
-    font-size: 30px;
-    color: white;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 10px;
-    backdrop-filter: blur(5px);
-    transition: 0.3s;
-}
-#next{
-    background: rgba(255,255,255,0.3);
-    border: none;
-    font-size: 30px;
-    color: white;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 10px;
-    backdrop-filter: blur(5px);
-    transition: 0.3s;
-}
+
 .icon {
     background-color: red;
     color: #fff;
@@ -295,32 +283,7 @@ input:checked + label .row{
 h4 {
     text-transform: uppercase;
 }
-.slider .nav-buttons{
-    position: absolute;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    top: 50%;
-    transform: translateY(-50%);
-    padding: 0 20px;
-}
 
-.slider .nav-buttons button{
-    background: rgba(255,255,255,0.3);
-    border: none;
-    font-size: 30px;
-    color: white;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 10px;
-    backdrop-filter: blur(5px);
-    transition: 0.3s;
-}
-
-.slider .nav-buttons button:hover{
-    background: rgba(255,255,255,0.6);
-    
-}
         /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
             nav ul { display: none; }
